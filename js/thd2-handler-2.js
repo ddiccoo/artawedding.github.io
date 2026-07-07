@@ -103,115 +103,115 @@ $(document).ready(function () {
 });
 
 // ----- BUKU UCAPAN ----- //
-var currentOffset = 0;
-var isLoading = false; // Guard agar tidak terjadi double fetch
+// var currentOffset = 0;
+// var isLoading = false; // Guard agar tidak terjadi double fetch
 
-function loadUcapan(isNew = false) {
-  if (isLoading) return; // Jika sedang loading, jangan ambil data lagi
-  isLoading = true;
+// function loadUcapan(isNew = false) {
+//   if (isLoading) return; // Jika sedang loading, jangan ambil data lagi
+//   isLoading = true;
 
-  if (isNew) {
-    currentOffset = 0;
-    $("#daftar-ucapan").empty(); // Pastikan kontainer kosong total saat reset
-  }
+//   if (isNew) {
+//     currentOffset = 0;
+//     $("#daftar-ucapan").empty(); // Pastikan kontainer kosong total saat reset
+//   }
 
-  $.ajax({
-    type: "GET",
-    url: "ambil_ucapan.php",
-    data: { offset: currentOffset },
-    dataType: "json",
-    success: function (data) {
-      var html = "";
-      if (data && data.length > 0) {
-        data.forEach(function (item) {
-          var statusColor =
-            item.kehadiran === "Hadir"
-              ? "rgba(46, 204, 113, 0.4)"
-              : "rgba(255, 255, 255, 0.2)";
-          html += `
-                    <div class="ucapan-card">
-                        <div class="ucapan-header">
-                            <h4 class="ucapan-nama">${item.nama}</h4>
-                            <span class="ucapan-status" style="background: ${statusColor}">${item.kehadiran}</span>
-                        </div>
-                        <p class="ucapan-pesan">"${item.pesan}"</p>
-                        <span class="ucapan-waktu"><i class="icon-clock"></i> ${item.created_at}</span>
-                    </div>`;
-        });
+//   $.ajax({
+//     type: "GET",
+//     url: "ambil_ucapan.php",
+//     data: { offset: currentOffset },
+//     dataType: "json",
+//     success: function (data) {
+//       var html = "";
+//       if (data && data.length > 0) {
+//         data.forEach(function (item) {
+//           var statusColor =
+//             item.kehadiran === "Hadir"
+//               ? "rgba(46, 204, 113, 0.4)"
+//               : "rgba(255, 255, 255, 0.2)";
+//           html += `
+//                     <div class="ucapan-card">
+//                         <div class="ucapan-header">
+//                             <h4 class="ucapan-nama">${item.nama}</h4>
+//                             <span class="ucapan-status" style="background: ${statusColor}">${item.kehadiran}</span>
+//                         </div>
+//                         <p class="ucapan-pesan">"${item.pesan}"</p>
+//                         <span class="ucapan-waktu"><i class="icon-clock"></i> ${item.created_at}</span>
+//                     </div>`;
+//         });
 
-        if (isNew) {
-          $("#daftar-ucapan").html(html); // Gunakan .html() untuk menimpa jika data baru
-        } else {
-          $("#daftar-ucapan").append(html); // Gunakan .append() hanya untuk load more
-        }
+//         if (isNew) {
+//           $("#daftar-ucapan").html(html); // Gunakan .html() untuk menimpa jika data baru
+//         } else {
+//           $("#daftar-ucapan").append(html); // Gunakan .append() hanya untuk load more
+//         }
 
-        currentOffset += data.length;
-        if (data.length === 5) {
-          $("#btn-load-more").show();
-        } else {
-          $("#btn-load-more").hide();
-        }
-      } else {
-        if (currentOffset === 0) {
-          $("#daftar-ucapan").html(
-            '<p class="text-center" style="color: #888;">Belum ada doa tertulis.</p>',
-          );
-        }
-        $("#btn-load-more").hide();
-      }
-    },
-    complete: function () {
-      isLoading = false; // Buka kembali kunci loading
-    },
-  });
-}
+//         currentOffset += data.length;
+//         if (data.length === 5) {
+//           $("#btn-load-more").show();
+//         } else {
+//           $("#btn-load-more").hide();
+//         }
+//       } else {
+//         if (currentOffset === 0) {
+//           $("#daftar-ucapan").html(
+//             '<p class="text-center" style="color: #888;">Belum ada doa tertulis.</p>',
+//           );
+//         }
+//         $("#btn-load-more").hide();
+//       }
+//     },
+//     complete: function () {
+//       isLoading = false; // Buka kembali kunci loading
+//     },
+//   });
+// }
 
-$(document).ready(function () {
-  // Gunakan .off() sebelum .on() untuk memastikan handler tidak terpasang dua kali
-  $("#form-ucapan")
-    .off("submit")
-    .on("submit", function (e) {
-      e.preventDefault();
+// $(document).ready(function () {
+//   // Gunakan .off() sebelum .on() untuk memastikan handler tidak terpasang dua kali
+//   $("#form-ucapan")
+//     .off("submit")
+//     .on("submit", function (e) {
+//       e.preventDefault();
 
-      var $btn = $(this).find('button[type="submit"]');
-      $btn.prop("disabled", true).text("Mengirim..."); // Disable tombol agar tidak klik 2x
+//       var $btn = $(this).find('button[type="submit"]');
+//       $btn.prop("disabled", true).text("Mengirim..."); // Disable tombol agar tidak klik 2x
 
-      var formData = {
-        nama: $("#nama").val(),
-        kehadiran: $("#kehadiran").val(),
-        pesan: $("#pesan").val(),
-      };
+//       var formData = {
+//         nama: $("#nama").val(),
+//         kehadiran: $("#kehadiran").val(),
+//         pesan: $("#pesan").val(),
+//       };
 
-      $.ajax({
-        type: "POST",
-        url: "simpan_ucapan.php",
-        data: formData,
-        dataType: "json",
-        success: function (response) {
-          if (response.status === "success") {
-            alert("Ucapan Berhasil Dikirim!");
-            $("#form-ucapan")[0].reset();
-            loadUcapan(true); // Reset daftar
-          } else {
-            alert("Gagal mengirim: " + response.message);
-          }
-        },
-        error: function () {
-          alert("Terjadi kesalahan sistem.");
-        },
-        complete: function () {
-          $btn.prop("disabled", false).text("Kirim Ucapan");
-        },
-      });
-    });
+//       $.ajax({
+//         type: "POST",
+//         url: "simpan_ucapan.php",
+//         data: formData,
+//         dataType: "json",
+//         success: function (response) {
+//           if (response.status === "success") {
+//             alert("Ucapan Berhasil Dikirim!");
+//             $("#form-ucapan")[0].reset();
+//             loadUcapan(true); // Reset daftar
+//           } else {
+//             alert("Gagal mengirim: " + response.message);
+//           }
+//         },
+//         error: function () {
+//           alert("Terjadi kesalahan sistem.");
+//         },
+//         complete: function () {
+//           $btn.prop("disabled", false).text("Kirim Ucapan");
+//         },
+//       });
+//     });
 
-  // Inisialisasi awal
-  loadUcapan();
+//   // Inisialisasi awal
+//   loadUcapan();
 
-  $("#btn-load-more").on("click", function () {
-    loadUcapan();
-  });
-});
+//   $("#btn-load-more").on("click", function () {
+//     loadUcapan();
+//   });
+// });
 // ----- BUKU UCAPAN END ----- //
 
 // ----- INVITATION RECEIVER ----- //
@@ -258,37 +258,3 @@ function showRemaining() {
   document.getElementById("seconds").innerHTML = seconds;
 }
 timer = setInterval(showRemaining, 1000);
-
-// ----- CLICKABLE IMAGE ----- //
-// document.addEventListener("DOMContentLoaded", () => {
-//   const lightbox = document.getElementById("lightbox");
-//   const lbImg = document.getElementById("lightbox-img");
-//   const lbCaption = document.getElementById("lightbox-caption");
-//   const closeBtn = lightbox.querySelector(".close");
-
-//   function openLightbox(trigger) {
-//     const img = trigger.querySelector("img");
-//     const bigSrc = trigger.dataset.large || img.src; // pakai data-large kalau ada
-//     lbImg.src = bigSrc;
-//     lbCaption.textContent = trigger.dataset.caption || img.alt;
-//     lightbox.classList.add("open");
-//     document.body.style.overflow = "hidden";
-//   }
-
-//   function closeLightbox() {
-//     lightbox.classList.remove("open");
-//     document.body.style.overflow = "";
-//     lbImg.src = "";
-//   }
-
-//   document.addEventListener("click", (e) => {
-//     const parent = e.target.closest(".clickable-parent");
-//     if (parent) {
-//       openLightbox(parent);
-//       return;
-//     }
-//     if (e.target === lightbox || e.target.classList.contains("close")) {
-//       closeLightbox();
-//     }
-//   });
-// });
