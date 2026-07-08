@@ -230,7 +230,7 @@ if (receiver === "" || receiver == null) {
 // ----- DATE COUNTER ----- //
 var end = new Date("08/08/2026 12:00 PM");
 // var end = new Date();
-end.setDate(end.getDate() + 30);
+end.setDate(end.getDate());
 
 var _second = 1000;
 var _minute = _second * 60;
